@@ -1,0 +1,321 @@
+{
+ "fields": [
+  {
+   "key": "name.given",
+   "label": "First name",
+   "group": "Name",
+   "icon": "user",
+   "required": true
+  },
+  {
+   "key": "name.family",
+   "label": "Last name",
+   "group": "Name",
+   "icon": "user",
+   "required": true
+  },
+  {
+   "key": "name.prefix",
+   "label": "Title (Dr., Ms.)",
+   "group": "Name",
+   "icon": "badge",
+   "required": false
+  },
+  {
+   "key": "name.middle",
+   "label": "Middle name",
+   "group": "Name",
+   "icon": "user",
+   "required": false
+  },
+  {
+   "key": "name.suffix",
+   "label": "Suffix (Jr., PhD)",
+   "group": "Name",
+   "icon": "badge",
+   "required": false
+  },
+  {
+   "key": "name.maiden",
+   "label": "Maiden name",
+   "group": "Name",
+   "icon": "user",
+   "required": false
+  },
+  {
+   "key": "name.phonetic",
+   "label": "Phonetic name",
+   "group": "Name",
+   "icon": "speech",
+   "required": false
+  },
+  {
+   "key": "nicknames",
+   "label": "Nickname",
+   "group": "Name",
+   "icon": "smile",
+   "required": false
+  },
+  {
+   "key": "org.company",
+   "label": "Company",
+   "group": "Work",
+   "icon": "building",
+   "required": false
+  },
+  {
+   "key": "org.department",
+   "label": "Department",
+   "group": "Work",
+   "icon": "layers",
+   "required": false
+  },
+  {
+   "key": "org.title",
+   "label": "Job title",
+   "group": "Work",
+   "icon": "briefcase",
+   "required": false
+  },
+  {
+   "key": "phones",
+   "label": "Phone",
+   "group": "Reach",
+   "icon": "phone",
+   "required": false
+  },
+  {
+   "key": "emails",
+   "label": "Email",
+   "group": "Reach",
+   "icon": "mail",
+   "required": false
+  },
+  {
+   "key": "addresses",
+   "label": "Address",
+   "group": "Reach",
+   "icon": "map-pin",
+   "required": false
+  },
+  {
+   "key": "urls",
+   "label": "Website",
+   "group": "Reach",
+   "icon": "globe",
+   "required": false
+  },
+  {
+   "key": "ims",
+   "label": "Messengers",
+   "group": "Reach",
+   "icon": "message-circle",
+   "required": false
+  },
+  {
+   "key": "social",
+   "label": "Social profiles",
+   "group": "Reach",
+   "icon": "at-sign",
+   "required": false
+  },
+  {
+   "key": "keys",
+   "label": "Keys (PGP)",
+   "group": "Reach",
+   "icon": "key",
+   "required": false
+  },
+  {
+   "key": "birthday",
+   "label": "Birthday",
+   "group": "Personal",
+   "icon": "cake",
+   "required": false
+  },
+  {
+   "key": "anniversary",
+   "label": "Anniversary",
+   "group": "Personal",
+   "icon": "heart",
+   "required": false
+  },
+  {
+   "key": "dates.other",
+   "label": "Other dates",
+   "group": "Personal",
+   "icon": "calendar",
+   "required": false
+  },
+  {
+   "key": "relations",
+   "label": "Related people",
+   "group": "Personal",
+   "icon": "users",
+   "required": false
+  },
+  {
+   "key": "gender",
+   "label": "Gender",
+   "group": "Personal",
+   "icon": "user-round",
+   "required": false
+  },
+  {
+   "key": "pronouns",
+   "label": "Pronouns",
+   "group": "Personal",
+   "icon": "message-square",
+   "required": false
+  },
+  {
+   "key": "languages",
+   "label": "Languages",
+   "group": "Personal",
+   "icon": "languages",
+   "required": false
+  },
+  {
+   "key": "timezone",
+   "label": "Time zone",
+   "group": "Personal",
+   "icon": "clock",
+   "required": false
+  },
+  {
+   "key": "geo",
+   "label": "Location (coordinates)",
+   "group": "Personal",
+   "icon": "map",
+   "required": false
+  },
+  {
+   "key": "interests",
+   "label": "Interests",
+   "group": "Personal",
+   "icon": "sparkles",
+   "required": false
+  },
+  {
+   "key": "notes",
+   "label": "Notes",
+   "group": "Other",
+   "icon": "notebook-pen",
+   "required": false
+  },
+  {
+   "key": "categories",
+   "label": "Labels",
+   "group": "Other",
+   "icon": "tag",
+   "required": false
+  },
+  {
+   "key": "custom",
+   "label": "Custom fields",
+   "group": "Other",
+   "icon": "plus-square",
+   "required": false
+  },
+  {
+   "key": "kind",
+   "label": "Company card (no person)",
+   "group": "Other",
+   "icon": "building-2",
+   "required": false
+  }
+ ],
+ "templates": [
+  {
+   "name": "Basic",
+   "builtin": true,
+   "fields": [
+    "name.given",
+    "name.family",
+    "org.company",
+    "phones",
+    "emails",
+    "notes"
+   ]
+  },
+  {
+   "name": "Personal",
+   "builtin": true,
+   "fields": [
+    "name.given",
+    "name.family",
+    "name.middle",
+    "nicknames",
+    "phones",
+    "emails",
+    "addresses",
+    "birthday",
+    "anniversary",
+    "relations",
+    "social",
+    "ims",
+    "notes",
+    "categories"
+   ]
+  },
+  {
+   "name": "Business",
+   "builtin": true,
+   "fields": [
+    "name.given",
+    "name.family",
+    "name.prefix",
+    "name.suffix",
+    "org.company",
+    "org.department",
+    "org.title",
+    "phones",
+    "emails",
+    "addresses",
+    "urls",
+    "social",
+    "ims",
+    "notes",
+    "categories"
+   ]
+  },
+  {
+   "name": "Everything",
+   "builtin": true,
+   "fields": [
+    "name.given",
+    "name.family",
+    "name.prefix",
+    "name.middle",
+    "name.suffix",
+    "name.maiden",
+    "name.phonetic",
+    "nicknames",
+    "org.company",
+    "org.department",
+    "org.title",
+    "phones",
+    "emails",
+    "addresses",
+    "urls",
+    "ims",
+    "social",
+    "keys",
+    "birthday",
+    "anniversary",
+    "dates.other",
+    "relations",
+    "gender",
+    "pronouns",
+    "languages",
+    "timezone",
+    "geo",
+    "interests",
+    "notes",
+    "categories",
+    "custom",
+    "kind"
+   ]
+  }
+ ]
+}
