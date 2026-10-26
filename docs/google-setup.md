@@ -56,10 +56,10 @@ the first time you sign in Google shows **"Google hasn't verified this app"**. T
 
 ## 6. Paste them into Kith
 
-1. In Kith open **Settings** > **Google**.
-2. Paste the **Client ID** and the **Client secret**.
-3. Click **Sign in**. Your browser opens Google's page; choose your account, confirm the "unverified app" notice (step 4), keep the **contacts** permission ticked and continue. The browser tab then says Kith is connected and you can close it.
-4. Run the first sync. It only **reads** from Google. Check the result, then switch on writing back to Google ("two-way") when you are happy.
+1. In Kith click the **gear** at the bottom left (Settings) and scroll to **Google Contacts**.
+2. Paste the **Client ID** and the **Client secret** and click **Save**.
+3. Click **Connect Google account**. Your browser opens Google's page; choose your account, confirm the "unverified app" notice (step 4), keep the **contacts** permission ticked and continue. The browser tab then says Kith is connected and you can close it.
+4. Click **Preview what a sync would do** to see the plan, then **Sync now**. This first sync only **reads** from Google (the switch "Send my changes to Google" is off). Look through your contacts; when you are happy, switch it on.
 
 ## Good to know
 

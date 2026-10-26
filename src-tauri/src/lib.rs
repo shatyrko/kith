@@ -109,7 +109,9 @@ async fn get_settings(state: State<'_, AppState>) -> Cmd<Settings> {
 }
 
 #[tauri::command]
-async fn save_settings(state: State<'_, AppState>, settings: Settings) -> Cmd<Settings> {
+async fn save_settings(state: State<'_, AppState>, mut settings: Settings) -> Cmd<Settings> {
+    // switching writing back off forgets the confirmation
+    settings.google.two_way_confirmed &= settings.google.two_way;
     settings.save().map_err(err)?;
     *state.settings.lock().map_err(err)? = settings.clone();
     Ok(settings)
@@ -214,7 +216,7 @@ async fn google_login(app: AppHandle, state: State<'_, AppState>) -> Cmd<GoogleS
     Ok(status_of(&s))
 }
 
-fn run_sync(app: &AppHandle, dry_run: bool) -> Result<SyncReport, String> {
+fn run_sync(app: &AppHandle, dry_run: bool, auto: bool) -> Result<SyncReport, String> {
     let state = app.state::<AppState>();
     let _one_at_a_time = state.sync_lock.lock().map_err(err)?;
     let g = state.settings.lock().map_err(err)?.google.clone();
@@ -227,12 +229,17 @@ fn run_sync(app: &AppHandle, dry_run: bool) -> Result<SyncReport, String> {
     };
     let mut store = state.store.lock().map_err(err)?;
     let mut sync_state = SyncState::load(store.root()).map_err(err)?;
-    let opts = SyncOptions { two_way: g.two_way, allow_remote_deletes: g.two_way && g.allow_deletes, dry_run };
+    // the automatic sync writes to Google only after you have run a two-way sync by hand once
+    let two_way = g.two_way && (!auto || g.two_way_confirmed);
+    let opts = SyncOptions { two_way, allow_remote_deletes: two_way && g.allow_deletes, dry_run };
     let report = sync::sync(&mut store, &api, &mut sync_state, &opts).map_err(err)?;
     drop(store);
     if !dry_run {
         if let Ok(mut s) = state.settings.lock() {
             s.google.last_sync = kith_core::now();
+            if two_way && !auto {
+                s.google.two_way_confirmed = true;
+            }
             let _ = s.save();
         }
     }
@@ -242,7 +249,7 @@ fn run_sync(app: &AppHandle, dry_run: bool) -> Result<SyncReport, String> {
 #[tauri::command]
 async fn google_sync(app: AppHandle, dry_run: bool) -> Cmd<SyncReport> {
     let handle = app.clone();
-    let report = tauri::async_runtime::spawn_blocking(move || run_sync(&handle, dry_run)).await.map_err(err)??;
+    let report = tauri::async_runtime::spawn_blocking(move || run_sync(&handle, dry_run, false)).await.map_err(err)??;
     if !dry_run {
         let _ = app.emit("contacts-changed", ());
     }
@@ -277,7 +284,7 @@ fn start_auto_sync(app: AppHandle) {
                 continue;
             }
             last = std::time::Instant::now();
-            if run_sync(&app, false).is_ok() {
+            if run_sync(&app, false, true).is_ok() {
                 let _ = app.emit("contacts-changed", ());
             }
         }

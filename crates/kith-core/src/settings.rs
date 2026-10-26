@@ -32,6 +32,8 @@ pub struct GoogleSettings {
     pub two_way: bool,
     /// With `two_way`: contacts deleted in Kith are deleted on Google too (Google keeps them 30 days in its trash).
     pub allow_deletes: bool,
+    /// A manual two-way sync has been run: only then may the automatic sync write to Google.
+    pub two_way_confirmed: bool,
     pub auto_sync_minutes: u32,
     pub last_sync: u64,
 }

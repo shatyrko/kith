@@ -57,6 +57,9 @@ async function toggleTwoWay() {
   s.google.two_way = !s.google.two_way;
   await apply();
   await refreshGoogle();
+  // turning it on: show at once what would be sent; nothing is sent before you press "Sync now"
+  if (s.google.two_way) await sync(true);
+  else report.value = null;
 }
 const docs = 'https://github.com/shatyrko/kith/blob/main/docs/google-setup.md';
 </script>
@@ -102,7 +105,7 @@ const docs = 'https://github.com/shatyrko/kith/blob/main/docs/google-setup.md';
             <span class="spacer"></span><button class="btn small" @click="signOut">Disconnect</button></div>
           <div class="row" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px">
             <div style="flex: 1"><div style="font-weight: 600">Send my changes to Google</div>
-              <div class="muted" style="font-size: 12.5px">Off: Kith only reads from Google and never changes it. Turn it on after a first sync looks right.</div></div>
+              <div class="muted" style="font-size: 12.5px">Off: Kith only reads from Google and never changes it. Turn it on after a first sync looks right; you then see a preview of what would be sent, and nothing leaves until you press “Sync now”.</div></div>
             <button class="switch" :class="{ on: s.google.two_way }" @click="toggleTwoWay"></button>
           </div>
           <div v-if="s.google.two_way" class="row" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px">

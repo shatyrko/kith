@@ -7,6 +7,10 @@ A fast, modern address book for Linux that syncs with **Google Contacts**. Built
 Kith is for people whose contacts live on many devices (iPhone, iPad, Mac, Android, two Linux laptops…) and who want one
 address book they own: plain files on disk, Google as the shared hub, no extra services.
 
+<p align="center"><img src="docs/screenshots/contact-dark.png" width="860" alt="Kith: a contact, dark theme"></p>
+
+*Screenshots show invented people only.*
+
 ## Features
 
 - **Plain files.** One `.vcf` file per contact in `~/.local/share/kith/contacts`. Back it up with `cp`, read it with anything.
@@ -22,6 +26,15 @@ address book they own: plain files on disk, Google as the shared hub, no extra s
 - **Search** that ignores accents and finds phone numbers however they are written.
 - **Duplicates and merge**, **upcoming birthdays**, **labels**, favorites, trash (30 days), photos.
 - Dark and light themes (follows the system).
+
+## Screens
+
+| | |
+|---|---|
+| ![Editor](docs/screenshots/editor-dark.png) | ![Fields](docs/screenshots/fields-dark.png) |
+| The form shows the fields of the active template; “Add field” brings back any other. | Choose the fields of a template (Basic, Personal, Business, Everything, your own). |
+| ![Light](docs/screenshots/contact-light.png) | ![Birthdays](docs/screenshots/birthdays-dark.png) |
+| Light theme (follows the system). | Upcoming birthdays. |
 
 ## Install
 

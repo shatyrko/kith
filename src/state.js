@@ -55,7 +55,8 @@ export async function init() {
     import('@tauri-apps/api/event').then(({ listen }) => listen('contacts-changed', () => { refresh(); refreshGoogle(); }));
   }
   state.ready = true;
-  if (state.list.length) select(state.list[0].id);
+  if (isMock) await mockView();
+  else if (state.list.length) select(state.list[0].id);
 }
 
 export function applyTheme() {
@@ -243,4 +244,17 @@ export async function googleSync(dryRun = false) {
 
 export function theApi() {
   return api;
+}
+
+// Browser-only demo (npm run dev): ?theme=light&group=birthdays&contact=Amelia&edit=1&dialog=fields picks the view,
+// used to take the README screenshots.
+async function mockView() {
+  const q = new URLSearchParams(location.search);
+  if (q.get('theme')) { state.settings.theme = q.get('theme'); applyTheme(); }
+  if (q.get('group')) await setGroup(q.get('group'));
+  const who = q.get('contact');
+  const hit = who ? state.list.find((c) => c.display.includes(who)) : state.list[0];
+  if (hit) await select(hit.id);
+  if (q.get('edit')) startEdit();
+  if (q.get('dialog')) state.dialog = q.get('dialog');
 }
