@@ -6,3 +6,4 @@ pub mod settings;
 pub mod store;
 pub mod vcard;
 pub use model::*;
+pub mod google;

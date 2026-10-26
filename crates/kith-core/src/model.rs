@@ -170,6 +170,20 @@ impl Contact {
         Contact { id: new_id(), created: t, updated: t, ..Default::default() }
     }
 
+    /// Days until the next birthday (0 = today) and the age that turns, given today's date as days since 1970.
+    pub fn next_birthday(&self, today: i64) -> Option<(i64, Option<u16>)> {
+        let b = self.birthday().filter(|b| b.month > 0 && b.day > 0)?;
+        let (y, _, _) = crate::vcard::civil_from_days(today);
+        // 29 February in a year without one falls on 1 March (the day arithmetic does that by itself)
+        let mut when = crate::vcard::days_from_civil(y, b.month as i64, b.day as i64);
+        let mut year = y;
+        if when < today {
+            year += 1;
+            when = crate::vcard::days_from_civil(year, b.month as i64, b.day as i64);
+        }
+        Some((when - today, b.year.map(|by| (year - by as i64).max(0) as u16)))
+    }
+
     pub fn is_org(&self) -> bool {
         self.kind == "org"
     }

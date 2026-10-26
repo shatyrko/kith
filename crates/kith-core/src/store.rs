@@ -18,6 +18,8 @@ pub enum Error {
 }
 pub type Result<T> = std::result::Result<T, Error>;
 
+const MONTHS: [&str; 12] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 pub fn default_root() -> PathBuf {
     if let Ok(x) = std::env::var("XDG_DATA_HOME") {
         if !x.is_empty() {
@@ -59,6 +61,30 @@ pub struct ImportReport {
 pub struct Store {
     root: PathBuf,
     contacts: BTreeMap<String, Contact>,
+}
+
+/// The list row of a contact; `key` is its sort key (the first letter becomes the section header).
+pub fn summarize(c: &Contact, family_first: bool, key: &str) -> Summary {
+    let letter = key.chars().next().filter(|ch| ch.is_alphabetic()).map(|ch| ch.to_uppercase().collect::<String>()).unwrap_or_else(|| "#".into());
+    let subtitle = c
+        .orgs
+        .iter()
+        .find(|o| !o.company.is_empty() || !o.title.is_empty())
+        .map(|o| [o.title.as_str(), o.company.as_str()].iter().filter(|s| !s.is_empty()).cloned().collect::<Vec<_>>().join(" · "))
+        .filter(|s| !c.is_org() || s != &c.display_name(false))
+        .or_else(|| c.emails.iter().find(|e| !e.value.is_empty()).map(|e| e.value.clone()))
+        .or_else(|| c.phones.iter().find(|e| !e.value.is_empty()).map(|e| e.value.clone()))
+        .unwrap_or_default();
+    Summary {
+        id: c.id.clone(),
+        display: c.display_name(family_first),
+        letter,
+        subtitle,
+        favorite: c.favorite,
+        has_photo: c.photo.is_some(),
+        is_org: c.is_org(),
+        updated: c.updated,
+    }
 }
 
 fn atomic_write(path: &Path, text: &str) -> Result<()> {
@@ -258,7 +284,7 @@ impl Store {
             "" | "all" => true,
             "favorites" => c.favorite,
             "nolabel" => c.categories.is_empty(),
-            "recent" => true,
+            "recent" | "birthdays" => true,
             g => match g.strip_prefix("label:") {
                 Some(l) => c.categories.iter().any(|x| x == l),
                 None => true,
@@ -283,36 +309,38 @@ impl Store {
                 (fold(key.trim()), c)
             })
             .collect();
+        let today = (now() / 86400) as i64;
+        if q.group == "birthdays" {
+            // the next 60 days, soonest first
+            let mut soon: Vec<(i64, Option<u16>, String, &Contact)> = rows
+                .iter()
+                .filter_map(|(k, c)| c.next_birthday(today).filter(|(d, _)| *d <= 60).map(|(d, age)| (d, age, k.clone(), *c)))
+                .collect();
+            soon.sort_by(|a, b| a.0.cmp(&b.0).then(a.2.cmp(&b.2)));
+            return soon
+                .into_iter()
+                .map(|(days, age, key, c)| {
+                    let mut s = summarize(c, q.family_first, &key);
+                    let b = c.birthday().unwrap();
+                    let when = match days {
+                        0 => "today".to_string(),
+                        1 => "tomorrow".to_string(),
+                        n => format!("in {} days", n),
+                    };
+                    let what = age.map(|a| format!("turns {}", a)).unwrap_or_else(|| "birthday".into());
+                    s.subtitle = format!("{} {} · {} {}", MONTHS[b.month as usize - 1], b.day, what, when);
+                    s.letter = String::new();
+                    s
+                })
+                .collect();
+        }
         if q.group == "recent" {
             rows.sort_by(|a, b| b.1.created.cmp(&a.1.created));
             rows.truncate(50);
         } else {
             rows.sort_by(|a, b| a.0.cmp(&b.0));
         }
-        rows.into_iter()
-            .map(|(key, c)| {
-                let letter = key.chars().next().filter(|ch| ch.is_alphabetic()).map(|ch| ch.to_uppercase().collect::<String>()).unwrap_or_else(|| "#".into());
-                let subtitle = c
-                    .orgs
-                    .iter()
-                    .find(|o| !o.company.is_empty() || !o.title.is_empty())
-                    .map(|o| [o.title.as_str(), o.company.as_str()].iter().filter(|s| !s.is_empty()).cloned().collect::<Vec<_>>().join(" · "))
-                    .filter(|s| !c.is_org() || s != &c.display_name(false))
-                    .or_else(|| c.emails.iter().find(|e| !e.value.is_empty()).map(|e| e.value.clone()))
-                    .or_else(|| c.phones.iter().find(|e| !e.value.is_empty()).map(|e| e.value.clone()))
-                    .unwrap_or_default();
-                Summary {
-                    id: c.id.clone(),
-                    display: c.display_name(q.family_first),
-                    letter,
-                    subtitle,
-                    favorite: c.favorite,
-                    has_photo: c.photo.is_some(),
-                    is_org: c.is_org(),
-                    updated: c.updated,
-                }
-            })
-            .collect()
+        rows.into_iter().map(|(key, c)| summarize(c, q.family_first, &key)).collect()
     }
 
     /// Labels in use with their contact counts.
@@ -603,6 +631,27 @@ mod tests {
         s2.restore(&a.id).unwrap();
         assert_eq!(s2.len(), 2);
         assert!(s2.save(Contact::new()).is_err());
+    }
+
+    #[test]
+    fn upcoming_birthdays() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut s = Store::open(dir.path()).unwrap();
+        let today = (now() / 86400) as i64;
+        let (y, m, d) = crate::vcard::civil_from_days(today + 5);
+        let mut soon = person("Soon", "Birthday", "", "");
+        soon.dates.push(LabeledDate { label: "birthday".into(), year: Some((y - 30) as u16), month: m as u8, day: d as u8 });
+        let (y2, m2, d2) = crate::vcard::civil_from_days(today + 200);
+        let mut later = person("Later", "Birthday", "", "");
+        later.dates.push(LabeledDate { label: "birthday".into(), year: None, month: m2 as u8, day: d2 as u8 });
+        let _ = y2;
+        s.save(soon).unwrap();
+        s.save(later).unwrap();
+        s.save(person("None", "Day", "", "")).unwrap();
+        let q = Query { group: "birthdays".into(), ..Default::default() };
+        let rows = s.list(&q);
+        assert_eq!(rows.len(), 1);
+        assert!(rows[0].subtitle.contains("turns 30") && rows[0].subtitle.contains("in 5 days"), "{}", rows[0].subtitle);
     }
 
     #[test]

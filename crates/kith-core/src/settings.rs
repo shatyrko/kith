@@ -30,6 +30,8 @@ pub struct GoogleSettings {
     pub account: String,
     /// Changes made in Kith are sent to Google. Off until you have checked a first read-only sync.
     pub two_way: bool,
+    /// With `two_way`: contacts deleted in Kith are deleted on Google too (Google keeps them 30 days in its trash).
+    pub allow_deletes: bool,
     pub auto_sync_minutes: u32,
     pub last_sync: u64,
 }
