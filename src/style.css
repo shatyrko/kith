@@ -65,6 +65,7 @@
 }
 
 * { box-sizing: border-box; }
+:root { --bar: 52px; --winctl: 128px; }
 html, body, #app { height: 100%; margin: 0; }
 body {
   background: var(--bg);
@@ -87,7 +88,7 @@ svg { flex: none; }
 ::-webkit-scrollbar-thumb:hover { background: var(--faint); background-clip: content-box; border: 3px solid transparent; }
 
 .app { display: grid; grid-template-columns: 236px 336px minmax(0, 1fr); height: 100%; }
-.side { background: var(--side); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 14px 10px; min-height: 0; }
+.side { background: var(--side); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 0 10px 14px; min-height: 0; }
 .list { background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; min-height: 0; }
 .pane { background: var(--bg); min-height: 0; display: flex; flex-direction: column; }
 
@@ -119,7 +120,7 @@ svg { flex: none; }
 .kbd { font-size: 11px; padding: 1px 6px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; color: var(--muted); }
 
 /* sidebar */
-.brand { display: flex; align-items: center; gap: 10px; padding: 4px 10px 16px; font-weight: 700; font-size: 17px; letter-spacing: -.01em; }
+.brand { display: flex; align-items: center; gap: 10px; height: var(--bar); flex: none; padding: 0 10px; margin-bottom: 6px; font-weight: 700; font-size: 17px; letter-spacing: -.01em; }
 .brand .logo { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--on-accent); }
 .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-s); color: var(--muted); width: 100%; text-align: left; transition: background .12s, color .12s; }
 .nav-item:hover { background: var(--hover); color: var(--text); }
@@ -129,11 +130,12 @@ svg { flex: none; }
 .nav-scroll { flex: 1; overflow: auto; min-height: 0; margin: 0 -4px; padding: 0 4px; }
 
 /* list */
-.list-head { padding: 14px 14px 10px; display: flex; flex-direction: column; gap: 10px; }
+.list-head { padding: 0 14px 10px; display: flex; flex-direction: column; gap: 8px; }
 .search { position: relative; }
 .search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
 .search .input { padding-left: 35px; border-radius: 11px; background: var(--bg); }
-.list-title { display: flex; align-items: baseline; gap: 8px; }
+.list-title { display: flex; align-items: center; gap: 8px; height: var(--bar); }
+.list-title h2 { align-self: center; }
 .list-title h2 { margin: 0; font-size: 19px; letter-spacing: -.01em; }
 .list-scroll { flex: 1; overflow: auto; min-height: 0; padding: 0 8px 12px; }
 .letter { position: sticky; top: 0; z-index: 2; padding: 12px 10px 5px; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; color: var(--accent); background: linear-gradient(var(--panel) 75%, transparent); }
@@ -150,7 +152,15 @@ svg { flex: none; }
 .avatar.org { border-radius: 28%; }
 
 /* pane */
-.pane-bar { display: flex; align-items: center; gap: 8px; padding: 12px 18px; min-height: 58px; }
+.pane-bar { display: flex; align-items: center; gap: 8px; padding: 0 var(--winctl) 0 18px; height: var(--bar); min-height: var(--bar); flex: none; }
+.pane-drag { position: absolute; top: 0; left: 0; right: 0; height: var(--bar); }
+.pane { position: relative; }
+
+/* the window's own title bar: the first row of every column is the bar, empty space in it drags the window */
+.winctl { position: fixed; top: 0; right: 0; height: var(--bar); display: flex; align-items: center; padding-right: 8px; gap: 2px; z-index: 45; }
+.winctl button { width: 36px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: var(--muted); transition: background .12s, color .12s; }
+.winctl button:hover { background: var(--hover); color: var(--text); }
+.winctl button.close:hover { background: var(--danger); color: #fff; }
 .pane-scroll { flex: 1; overflow: auto; min-height: 0; padding: 0 28px 40px; }
 .pane-inner { max-width: 700px; margin: 0 auto; }
 .hero { display: flex; align-items: center; gap: 22px; padding: 14px 0 22px; }

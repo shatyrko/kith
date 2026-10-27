@@ -6,6 +6,8 @@ import ContactList from './components/ContactList.vue';
 import ContactView from './components/ContactView.vue';
 import ContactEditor from './components/ContactEditor.vue';
 import Icon from './components/Icon.vue';
+import WindowControls from './components/WindowControls.vue';
+import { installDrag } from './window.js';
 import SettingsDialog from './components/SettingsDialog.vue';
 import FieldsDialog from './components/FieldsDialog.vue';
 import DuplicatesDialog from './components/DuplicatesDialog.vue';
@@ -27,15 +29,17 @@ function onKey(e) {
     else if (state.mode !== 'view') cancelEdit();
   }
 }
-onMounted(() => { init(); window.addEventListener('keydown', onKey); });
+onMounted(() => { init(); installDrag(); window.addEventListener('keydown', onKey); });
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 </script>
 
 <template>
   <div v-if="state.ready" class="app">
+    <WindowControls />
     <Sidebar />
     <ContactList />
     <main class="pane">
+      <div v-if="state.mode === 'view' && !state.contact" class="pane-drag" data-drag></div>
       <ContactEditor v-if="state.mode !== 'view'" :key="state.draft?.id || 'new'" />
       <ContactView v-else-if="state.contact" :key="state.contact.id" />
       <div v-else-if="state.total === 0" class="empty">

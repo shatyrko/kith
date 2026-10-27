@@ -24,7 +24,7 @@ async function sync() {
 
 <template>
   <aside class="side">
-    <div class="brand">
+    <div class="brand" data-drag>
       <div class="logo"><Icon name="contact" :size="18" /></div>
       Kith
     </div>

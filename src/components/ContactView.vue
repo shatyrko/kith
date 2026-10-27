@@ -34,7 +34,7 @@ const firstEmail = computed(() => c.value.emails.find((e) => e.value));
 </script>
 
 <template>
-  <div class="pane-bar">
+  <div class="pane-bar" data-drag>
     <span class="spacer"></span>
     <button class="btn ghost icon" :title="c.favorite ? 'Remove from favorites' : 'Add to favorites'" @click="toggleFavorite(c.id, !c.favorite)">
       <Icon name="star" :fill="c.favorite" :style="{ color: c.favorite ? 'var(--warn)' : '' }" />

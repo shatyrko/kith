@@ -38,7 +38,7 @@ watch(() => state.selectedId, (id) => {
 <template>
   <section class="list">
     <div class="list-head">
-      <div class="list-title">
+      <div class="list-title" data-drag>
         <h2>{{ title }}</h2>
         <span class="faint">{{ state.list.length }}</span>
         <span class="spacer"></span>

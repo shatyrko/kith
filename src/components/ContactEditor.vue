@@ -121,7 +121,7 @@ const anyOrg = computed(() => on('org.company') || on('org.department') || on('o
 </script>
 
 <template>
-  <div class="pane-bar">
+  <div class="pane-bar" data-drag>
     <button class="btn ghost" @click="cancelEdit"><Icon name="back" :size="16" /> Cancel</button>
     <span class="spacer"></span>
     <div class="row" title="Which fields the form shows">
