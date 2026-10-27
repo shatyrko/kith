@@ -1,6 +1,7 @@
 <script setup>
-import { computed } from 'vue';
-import { state, setGroup, importFile, exportAll, googleSync, notify } from '../state.js';
+import { computed, ref, nextTick } from 'vue';
+import { state, setGroup, importFile, exportAll, googleSync, notify, refresh, theApi } from '../state.js';
+import { vContext } from '../contextmenu.js';
 import Icon from './Icon.vue';
 
 const group = computed(() => state.query.group);
@@ -15,6 +16,30 @@ const ago = computed(() => {
   return `Synced ${Math.round(m / 1440)} d ago`;
 });
 
+// labels: right-click to show or rename; renaming happens in place
+const renaming = ref(null);
+const newName = ref('');
+function labelMenu(l) {
+  return [
+    { label: 'Show contacts', icon: 'users-round', action: () => setGroup('label:' + l.name) },
+    { label: 'Rename label…', icon: 'pencil', action: async () => { renaming.value = l.name; newName.value = l.name; await nextTick(); document.querySelector('.rename-input')?.select(); } },
+  ];
+}
+async function finishRename(commit) {
+  const from = renaming.value, to = newName.value.trim();
+  renaming.value = null;
+  if (!commit || !to || to === from) return;
+  try {
+    await theApi().renameLabel(from, to);
+    const was = group.value === 'label:' + from;
+    await refresh();
+    if (was) setGroup('label:' + to);
+    notify('Label renamed');
+  } catch (e) { notify(String(e?.message || e), 'error'); }
+}
+const syncMenu = () => g.value.signed_in
+  ? [{ label: 'Sync now', icon: 'refresh', action: sync }, { label: 'Google settings…', icon: 'settings', action: () => (state.dialog = 'settings') }]
+  : [{ label: 'Connect Google…', icon: 'cloud', action: () => (state.dialog = 'settings') }];
 async function sync() {
   if (!g.value.signed_in) { state.dialog = 'settings'; return; }
   const r = await googleSync(false);
@@ -35,9 +60,15 @@ async function sync() {
       <button class="nav-item" :class="{ active: group === 'recent' }" @click="setGroup('recent')"><Icon name="clock3" /> Recently added</button>
 
       <div class="nav-title">Labels</div>
-      <button v-for="l in state.labels" :key="l.name" class="nav-item" :class="{ active: group === 'label:' + l.name }" @click="setGroup('label:' + l.name)">
-        <Icon name="tag" /> {{ l.name }} <span class="count">{{ l.count }}</span>
-      </button>
+      <template v-for="l in state.labels" :key="l.name">
+        <div v-if="renaming === l.name" class="nav-item active">
+          <Icon name="tag" />
+          <input v-model="newName" class="input rename-input" @keydown.enter.prevent="finishRename(true)" @keydown.esc.stop.prevent="finishRename(false)" @blur="finishRename(true)" />
+        </div>
+        <button v-else class="nav-item" :class="{ active: group === 'label:' + l.name }" v-context="() => labelMenu(l)" @click="setGroup('label:' + l.name)">
+          <Icon name="tag" /> {{ l.name }} <span class="count">{{ l.count }}</span>
+        </button>
+      </template>
       <button class="nav-item" :class="{ active: group === 'nolabel' }" @click="setGroup('nolabel')"><Icon name="folder" /> No label</button>
 
       <div class="nav-title">Tools</div>
@@ -47,7 +78,7 @@ async function sync() {
       <button class="nav-item" @click="state.dialog = 'trash'"><Icon name="trash" /> Trash</button>
     </div>
     <div class="row" style="padding: 10px 6px 0; border-top: 1px solid var(--border); margin-top: 8px">
-      <button class="nav-item" style="flex: 1; min-width: 0" :title="g.signed_in ? 'Sync with Google now' : 'Set up Google sync'" @click="sync">
+      <button class="nav-item" style="flex: 1; min-width: 0" v-context="syncMenu" :title="g.signed_in ? 'Sync with Google now' : 'Set up Google sync'" @click="sync">
         <Icon :name="g.signed_in ? 'cloud' : 'cloud-off'" :class="{ spin: state.syncing }" />
         <span style="min-width: 0; overflow: hidden">
           <div style="font-weight: 600; color: var(--text); white-space: nowrap; text-overflow: ellipsis; overflow: hidden">{{ g.signed_in ? g.account || 'Google' : 'Google sync' }}</div>

@@ -5,7 +5,7 @@ import {
   Heart, Calendar, Users, UserRound, MessageSquare, Languages, Clock, Map, Sparkles, NotebookPen, Tag, SquarePlus, Building2,
   Search, Plus, Star, Pencil, Trash2, X, Check, ChevronDown, ChevronRight, Settings, Cloud, CloudOff, RefreshCw, Download,
   Upload, Copy, Ellipsis, UsersRound, History, Folder, Contact, Merge, Undo2, SlidersHorizontal, LayoutTemplate, Save,
-  ExternalLink, Sun, Moon, Monitor, Camera, ImagePlus, Info, TriangleAlert, ArrowLeft, Link, Hash, Clock3, ShieldCheck, Trash, Minus, Square,
+  ExternalLink, Sun, Moon, Monitor, Camera, ImagePlus, Info, TriangleAlert, ArrowLeft, Link, Hash, Clock3, ShieldCheck, Trash, Minus, Square, Scissors, ClipboardPaste, TextSelect,
 } from 'lucide-vue-next';
 
 const icons = {
@@ -18,7 +18,7 @@ const icons = {
   upload: Upload, copy: Copy, more: Ellipsis, 'users-round': UsersRound, history: History, folder: Folder, contact: Contact,
   merge: Merge, undo: Undo2, sliders: SlidersHorizontal, template: LayoutTemplate, save: Save, external: ExternalLink, sun: Sun,
   moon: Moon, monitor: Monitor, camera: Camera, 'image-plus': ImagePlus, info: Info, warn: TriangleAlert, back: ArrowLeft, link: Link,
-  hash: Hash, clock3: Clock3, shield: ShieldCheck, minus: Minus, square: Square,
+  hash: Hash, clock3: Clock3, shield: ShieldCheck, scissors: Scissors, 'clipboard-paste': ClipboardPaste, 'text-select': TextSelect, minus: Minus, square: Square,
 };
 const props = defineProps({ name: String, size: { type: Number, default: 18 }, fill: Boolean });
 const comp = computed(() => icons[props.name] || Hash);

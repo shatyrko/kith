@@ -13,6 +13,7 @@ export const win = {
   toggleMaximize: call('toggleMaximize'),
   close: call('close'),
   isMaximized: call('isMaximized', false),
+  startResize: call('startResizeDragging'),
   onResized: async (cb) => (inTauri ? (await w()).onResized(cb) : () => {}),
 };
 

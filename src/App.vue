@@ -6,7 +6,10 @@ import ContactList from './components/ContactList.vue';
 import ContactView from './components/ContactView.vue';
 import ContactEditor from './components/ContactEditor.vue';
 import Icon from './components/Icon.vue';
+import ContextMenu from './components/ContextMenu.vue';
+import { installContextMenu } from './contextmenu.js';
 import WindowControls from './components/WindowControls.vue';
+import ResizeHandles from './components/ResizeHandles.vue';
 import { installDrag } from './window.js';
 import SettingsDialog from './components/SettingsDialog.vue';
 import FieldsDialog from './components/FieldsDialog.vue';
@@ -29,13 +32,14 @@ function onKey(e) {
     else if (state.mode !== 'view') cancelEdit();
   }
 }
-onMounted(() => { init(); installDrag(); window.addEventListener('keydown', onKey); });
+onMounted(() => { init(); installDrag(); installContextMenu(); window.addEventListener('keydown', onKey); });
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 </script>
 
 <template>
   <div v-if="state.ready" class="app">
     <WindowControls />
+    <ResizeHandles />
     <Sidebar />
     <ContactList />
     <main class="pane">
@@ -67,6 +71,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
     <FieldsDialog v-if="state.dialog === 'fields'" />
     <DuplicatesDialog v-if="state.dialog === 'duplicates'" />
     <TrashDialog v-if="state.dialog === 'trash'" />
+    <ContextMenu />
     <div v-if="state.toast" class="toast">
       <Icon :name="state.toast.kind === 'error' ? 'warn' : 'check'" :size="17" :style="{ color: state.toast.kind === 'error' ? 'var(--danger)' : 'var(--ok)' }" />
       {{ state.toast.msg }}

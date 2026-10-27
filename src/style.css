@@ -156,6 +156,13 @@ svg { flex: none; }
 .pane-drag { position: absolute; top: 0; left: 0; right: 0; height: var(--bar); }
 .pane { position: relative; }
 
+/* undecorated window: thin strips along the edges hand a resize to the compositor (the only thing that works on Wayland) */
+.rz { position: fixed; z-index: 80; }
+.rz.n, .rz.s { left: 12px; right: 12px; height: 5px; cursor: ns-resize; } .rz.n { top: 0; } .rz.s { bottom: 0; }
+.rz.w, .rz.e { top: 12px; bottom: 12px; width: 5px; cursor: ew-resize; } .rz.w { left: 0; } .rz.e { right: 0; }
+.rz.nw, .rz.ne, .rz.sw, .rz.se { width: 12px; height: 12px; } .rz.nw { top: 0; left: 0; cursor: nwse-resize; } .rz.se { bottom: 0; right: 0; cursor: nwse-resize; }
+.rz.ne { top: 0; right: 0; cursor: nesw-resize; } .rz.sw { bottom: 0; left: 0; cursor: nesw-resize; }
+
 /* the window's own title bar: the first row of every column is the bar, empty space in it drags the window */
 .winctl { position: fixed; top: 0; right: 0; height: var(--bar); display: flex; align-items: center; padding-right: 8px; gap: 2px; z-index: 45; }
 .winctl button { width: 36px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: var(--muted); transition: background .12s, color .12s; }
@@ -188,6 +195,19 @@ svg { flex: none; }
 .lrow { display: grid; grid-template-columns: 128px 1fr 32px; gap: 8px; margin-bottom: 8px; align-items: start; }
 .sticky-save { position: sticky; bottom: 0; display: flex; gap: 10px; align-items: center; padding: 14px 0; background: linear-gradient(transparent, var(--bg) 40%); }
 
+/* context menu: the app's own, the browser's is switched off (see src/contextmenu.js) */
+.ctxmenu { position: fixed; z-index: 70; min-width: 210px; max-width: 320px; padding: 5px; outline: none; background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); animation: ctx-in .09s ease-out; transform-origin: top left; }
+@keyframes ctx-in { from { opacity: 0; transform: scale(.97); } }
+.ctx-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 10px; border-radius: 8px; text-align: left; color: var(--text); }
+.ctx-item.focus { background: var(--accent-soft); color: var(--accent); }
+.ctx-item.danger { color: var(--danger); }
+.ctx-item.danger.focus { background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.ctx-item[disabled] { opacity: .4; pointer-events: none; }
+.ctx-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctx-hint { font-size: 12px; color: var(--faint); }
+.ctx-sep { height: 1px; background: var(--border); margin: 5px 6px; }
+.ctx-open { background: var(--hover); }
+
 /* popovers and dialogs */
 .pop { position: absolute; z-index: 30; background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 6px; min-width: 220px; max-height: 420px; overflow: auto; }
 .pop .nav-item { color: var(--text); }
@@ -218,3 +238,4 @@ svg { flex: none; }
 .toast { animation: rise .2s ease-out; }
 .pop { animation: pop .12s ease-out; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+.rename-input { padding: 3px 8px; border-radius: 7px; }
